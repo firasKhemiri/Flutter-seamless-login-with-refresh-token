@@ -20,4 +20,16 @@ class SecureStorage {
   Future deleteSecureData(String key) async {
     return await _storage.delete(key: key);
   }
+
+  Future<Map<String, String>> readAllSecureData() async {
+    return await _storage.readAll();
+  }
+
+  Future<Map> readSelectedSecureData(List<String> data) async {
+    var _map = <String, String>{};
+    data.forEach((key) async {
+      _map[key] = await _storage.read(key: key);
+    });
+    return _map;
+  }
 }
