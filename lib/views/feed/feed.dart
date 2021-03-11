@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_login/blocs/feed/bucket.dart';
 import 'package:flutter_login/repositories/auth/authentication_repository.dart';
 import 'package:flutter_login/repositories/post/feed_repository.dart';
+import 'package:flutter_login/views/feed/widgets/feed_main.dart';
 
 import '../../repositories/post/feed_repository.dart';
 
@@ -46,18 +47,18 @@ class _FeedViewState extends State<FeedView> {
         Theme.of(context).textTheme.headline1.copyWith(fontSize: 48);
 
     return SizedBox(
-      height: 200,
+      height: 400,
+      width: 400,
       child: Center(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             BlocBuilder<FeedBloc, FeedState>(builder: (context, state) {
-              log('state status ${state.status}');
               if (state.status == FeedStatus.loading) {
                 return const CircularProgressIndicator();
               }
               if (state.status == FeedStatus.loaded) {
-                return Text('wazzupp ${state.post.id}', style: hugeStyle);
+                return FeedMain();
               }
               if (state.status == FeedStatus.notloaded) {
                 return Text('${state.message}');

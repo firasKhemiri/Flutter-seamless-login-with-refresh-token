@@ -30,19 +30,12 @@ class GraphQLService {
       {Map<String, dynamic> variables}) async {
     var options = QueryOptions(document: gql(query));
     final result = await _client.query(options);
-    // log('''
-    //   $query
-    //   ${await _client.query(options).then((value) => value.data.toString())}
-    // ''');
     return result;
   }
 
   Future<QueryResult> performMutation(String query) async {
     var options = MutationOptions(document: gql(query));
-    QueryResult result;
-    await _client.mutate(options);
-
-    // log("mutation: $query  ${result.data.toString()}");
+    final result = await _client.mutate(options);
     return result;
   }
 }

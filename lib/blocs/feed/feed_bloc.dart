@@ -72,18 +72,15 @@ class FeedBloc extends Bloc<FeedEvents, FeedState> {
     } catch (e) {
       log('fail num: $retries ${e.toString()}');
       retries++;
-
       if (retries < 2)
         try {
           await _authenticationRepository.signInWithRefreshToken();
           yield* _fetchFeed(event, retries: retries);
         } catch (e) {
           yield const FeedState.notLoaded('Failed to authenticate');
-          log('Failed to authenticate');
         }
       else {
         yield const FeedState.notLoaded('Error: Max retries exceeded');
-        // _authenticationRepository.logOut();
       }
     }
   }

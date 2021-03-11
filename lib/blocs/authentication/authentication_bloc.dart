@@ -49,14 +49,14 @@ class AuthenticationBloc
   Future<AuthenticationState> _mapAuthenticationStatusChangedToState(
     AuthenticationStatusChanged event,
   ) async {
-    log('${event.status}');
+    log('event status: ${event.status}');
     switch (event.status) {
       case AuthenticationStatus.unknown:
         final _user = await _userRepository.getUser();
         if (_user != null) {
           return AuthenticationState.authenticated(_user);
         }
-        return const AuthenticationState.unknown();
+        return const AuthenticationState.unauthenticated();
 
       case AuthenticationStatus.unauthenticated:
         return const AuthenticationState.unauthenticated();

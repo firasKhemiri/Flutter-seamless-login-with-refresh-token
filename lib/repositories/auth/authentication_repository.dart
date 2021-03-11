@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:flutter_login/common/exceptions/exceptions.dart';
 import 'package:flutter_login/common/graphql/graphql_config.dart';
 import 'package:flutter_login/common/graphql/queries/bucket.dart';
 import 'package:flutter_login/models/user/user.dart';
@@ -15,7 +16,6 @@ class AuthenticationRepository {
   final _userRepository = UserRepository();
 
   Stream<AuthenticationStatus> get status async* {
-    await Future<void>.delayed(const Duration(seconds: 1));
     yield AuthenticationStatus.unknown;
     yield* _controller.stream;
   }
@@ -29,20 +29,15 @@ class AuthenticationRepository {
 
     try {
       final client = GraphQLService(null);
-      final result = await client.performQuery(
-          _queryMutation.getTokenByUsername("firas", "delln5110"));
+      final result = await client
+          .performQuery(_queryMutation.getTokenByUsername(username, password));
 
       _getUserfromData(result.data, 'tokenAuth');
       _controller.add(AuthenticationStatus.authenticated);
-      log('logging rep ${result.data.toString()}');
-
-      // Env.jwtToken = '''
-      // ignore: lines_longer_than_80_chars
-      //   eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImZpcmFzIiwiZXhwIjoxNjA4MjExNzYwLCJvcmlnSWF0IjoxNjA4MjExNzAwfQ.YQh4kfCPRANEh8di126NqtOiF3wsb7wxCQEfDwMnimg''';
-      // Env.refreshToken = '213f398d5988a6b1dbf6af33c616af8d032667512';
 
       final token = result.data['tokenAuth']['token'].toString();
       final refreshToken = result.data['tokenAuth']['refreshToken'].toString();
+
       final credentials = {
         'email': username,
         'password': password,
@@ -52,7 +47,7 @@ class AuthenticationRepository {
       await _userRepository.persistUserCredentials(credentials);
     } catch (e) {
       log(e.toString());
-      throw Exception('Wrong username or password');
+      throw AuthenticationException('Wrong username or password');
     }
   }
 
@@ -73,12 +68,14 @@ class AuthenticationRepository {
       await _userRepository.persistUserCredentials(credentials);
     } catch (e) {
       _controller.add(AuthenticationStatus.unauthenticated);
-      throw Exception('Invalid refresh token');
+      throw AuthenticationException('Invalid refresh token');
     }
   }
 
-  void logOut() {
+  void logOut() async {
     _controller.add(AuthenticationStatus.unauthenticated);
+    await _userRepository.deleteToken();
+    await _userRepository.deleteRefreshToken();
   }
 
   void dispose() => _controller.close();

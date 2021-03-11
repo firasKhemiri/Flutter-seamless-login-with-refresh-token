@@ -8,14 +8,6 @@ class UserRepository {
   User _user;
   final SecureStorage _secureStorage = SecureStorage();
 
-  // Future<User> getUser() async {
-  //   if (_user != null) return _user;
-  //   return Future.delayed(
-  //     const Duration(milliseconds: 300),
-  //     () => _user = const User(id: 1, name: '', imageUrl: ''),
-  //   );
-  // }
-
   Future<void> deleteToken() async {
     return await _secureStorage.deleteSecureData('token');
   }
@@ -42,9 +34,8 @@ class UserRepository {
   }
 
   Future<User> getUser() async {
-    log("yoo");
     var _user = await _secureStorage.readAllSecureData().then((credentials) =>
-        credentials['token'].toString() != null
+        credentials['token'] != null
             ? const User(id: 1, name: '', imageUrl: '')
             : null);
     return _user;

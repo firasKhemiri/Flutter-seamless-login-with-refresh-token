@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_login/blocs/authentication/bucket.dart';
 
 class HomePage extends StatelessWidget {
-  static Route route() {
-    return MaterialPageRoute<void>(builder: (_) => HomePage());
-  }
+  // static Route route() {
+  //   return MaterialPageRoute<void>(builder: (_) => HomePage());
+  // }
 
   @override
   Widget build(BuildContext context) {
